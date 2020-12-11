@@ -15,7 +15,7 @@ import java.util.List;
  * @Date 2020/12/11 17:42
  * @Version 1.0
  */
-public class IQueryPersonMapperImpl implements IQueryMapper {
+public class IQueryPersonMapperImpl implements IQueryMapper<Person> {
     @Override
     public List<Person> makeData(ResultSet rs) {
         List<Person> list = new ArrayList<>();

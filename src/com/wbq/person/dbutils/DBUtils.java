@@ -108,10 +108,10 @@ public class DBUtils<T> {
         return 0;
     }
 
-    public static <T> List<T> queryListPerson(String sql, Object... args) {
+    public static <T> List<T> queryListPerson(String sql, IQueryMapper<T> mapper, Object... args) {
         Connection con = getConnection();
         Statement st = null;
-        ResultSet rs = null;
+        ResultSet rs;
         List<T> list = new ArrayList<>();
         try {
             st = con.prepareStatement(sql);
@@ -121,13 +121,33 @@ public class DBUtils<T> {
                 }
             }
             rs = ((PreparedStatement) st).executeQuery();
-
+            list = mapper.makeData(rs);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
             closeAll(null, st, con);
         }
         return list;
+    }
+
+    public static <T> T queryPerson(String sql, IQueryMapper<T> mapper, int id) {
+        Connection con = getConnection();
+        Statement st = null;
+        ResultSet rs;
+        try {
+            st = con.prepareStatement(sql);
+            ((PreparedStatement) st).setInt(0, id);
+            rs = ((PreparedStatement) st).executeQuery();
+            List<Person> list = mapper.makeData(rs);
+            if (list != null && list.size() > 0) {
+                return (T) list.get(0);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            closeAll(null, st, con);
+        }
+        return null;
     }
 
 }
